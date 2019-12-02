@@ -1,7 +1,6 @@
-add_library(twain++
-        twain++.h)
+add_library(twain++ error_code.h twain++.h)
 
-target_sources(twain++ PRIVATE precompiled.h external/twain.h)
+target_sources(twain++ PRIVATE error_code.cpp precompiled.h external/twain.h)
 
 # In OSX, TWAIN library is a framework that must be statically linked
 if (APPLE)
