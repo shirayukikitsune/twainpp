@@ -1,0 +1,9 @@
+.idea
+.vs
+/.vscode
+/build*
+/cmake-*
+/out
+bin
+obj
+*.user
