@@ -18,8 +18,7 @@
 
 #pragma once
 
-#include <system_error>
-#include "external/twain.h"
+#include "precompiled.h"
 
 namespace kitsune::twain {
     enum class error_code {
@@ -45,37 +44,15 @@ namespace kitsune::twain {
         invalid_state = TWRC_CUSTOMBASE + 1,
     };
 
-    namespace detail {
-        class twain_category : public std::error_category {
-        public:
-            const char *name() const noexcept final {
-                return "TWAIN";
-            }
-
-            std::string message(int c) const final;
-        };
-    }
-
-    extern inline const detail::twain_category& twain_category() {
-        static detail::twain_category category;
-        return category;
-    }
-
-    inline std::error_code make_error_code(error_code ec) {
-        return { static_cast<int>(ec), twain_category() };
-    }
-}
-
-namespace std {
-    template<>
-    struct is_error_code_enum<kitsune::twain::error_code> : std::true_type {};
-}
-
-namespace kitsune::twain {
+    std::error_code make_error_code(error_code ec);
 
     class twain_error : public std::system_error {
     public:
         explicit twain_error(error_code e) : std::system_error(make_error_code(e)) {}
     };
+}
 
+namespace std {
+    template<>
+    struct is_error_code_enum<kitsune::twain::error_code> : std::true_type {};
 }
