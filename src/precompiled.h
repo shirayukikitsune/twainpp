@@ -19,3 +19,6 @@
 #pragma once
 
 #include "external/twain.h"
+
+#include <string>
+#include <system_error>
