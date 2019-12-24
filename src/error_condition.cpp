@@ -96,7 +96,7 @@ namespace kitsune::twain {
         return category;
     }
 
-    std::error_code make_error_code(error_condition ec)
+    std::error_condition make_error_condition(error_condition ec)
     {
         return { static_cast<int>(ec), category() };
     }
