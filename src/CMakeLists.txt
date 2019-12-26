@@ -1,4 +1,4 @@
-add_library(twain++ dsm.h error_code.h error_condition.h twain++.h types.h)
+add_library(twain++ enums/data_group.h dsm.h error_code.h error_condition.h twain++.h types.h)
 
 target_sources(twain++ PRIVATE dsm.cpp error_code.cpp error_condition.cpp external/twain.h)
 

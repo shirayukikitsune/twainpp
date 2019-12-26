@@ -16,23 +16,28 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef TWAINPP_TYPES_H
-#define TWAINPP_TYPES_H
+#ifndef TWAINPP_DATA_GROUP_H
+#define TWAINPP_DATA_GROUP_H
 
-#include "precompiled.h"
-
-#include "enums/data_group.h"
+#include "../precompiled.h"
 
 namespace kitsune::twain {
-    struct identity : public TW_IDENTITY {
-        identity()
-        {
-            std::fill_n((char*)this, sizeof(TW_IDENTITY), 0);
-        }
-    };
-    typedef TW_HANDLE handle;
 
-    typedef uint16_t (dsm_entry)(identity*, identity*, uint32_t, uint16_t, uint16_t, TW_MEMREF);
+    enum data_group : uint32_t {
+        ///! Message that should be used to control the DS or the DSM
+        control = DG_CONTROL,
+        ///! Message that should be used to handle an image from a DS
+        image = DG_IMAGE,
+        ///! Message that should be used to handle an audio from a DS
+        audio = DG_AUDIO,
+        ///! Data flag indicating that this is a TWAIN 2.0+ connection to the DSM
+        dsm_twain2 = DF_DSM2,
+        ///! Data flag indicating that the application is TWAIN 2.0+ compatible
+        app_twain2 = DF_APP2,
+        ///! Data flag indicating that the DS is TWAIN 2.0+ compatible
+        ds_twain2 = DF_DS2,
+    };
+
 }
 
 #endif

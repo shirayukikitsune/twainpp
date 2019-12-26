@@ -19,8 +19,10 @@
 #ifndef TWAINPP_H
 #define TWAINPP_H
 
+#include "enums/data_group.h"
 #include "error_code.h"
 #include "error_condition.h"
 #include "dsm.h"
+#include "types.h"
 
 #endif

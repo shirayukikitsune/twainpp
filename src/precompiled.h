@@ -22,6 +22,7 @@
 #include "external/twain.h"
 
 #include <boost/dll.hpp>
+#include <algorithm>
 #include <functional>
 #include <memory>
 #include <string>

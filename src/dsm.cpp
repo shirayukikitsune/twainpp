@@ -36,6 +36,27 @@ void dsm::state(enum dsm::state new_state)
     state_ = new_state;
 }
 
+void dsm::open(identity *client_identity, TW_MEMREF parent_window)
+{
+    if (state_ == state::ready) {
+        return;
+    }
+
+    (*this)(client_identity, nullptr, data_group::control, DAT_PARENT, MSG_OPENDSM, parent_window);
+
+    request_entrypoint(client_identity);
+    state(state::ready);
+}
+
+void dsm::open(identity *client_identity, TW_MEMREF parent_window, std::error_code &ec) noexcept
+{
+    try {
+        open(client_identity, parent_window);
+    } catch (const std::system_error& e) {
+        ec = e.code();
+    }
+}
+
 handle dsm::alloc(uint32_t size)
 {
     if (entrypoint_.DSM_MemAllocate) {
@@ -43,10 +64,12 @@ handle dsm::alloc(uint32_t size)
     }
 
 #ifdef TWH_CMP_MSC
-    return ::GlobalAlloc(GPTR, size);
+    auto memory = ::GlobalAlloc(GPTR, size);
 #else
-    return reinterpret_cast<TW_HANDLE>(::malloc(size));
+    auto memory = ::malloc(size);
 #endif
+
+    return reinterpret_cast<handle>(memory);
 }
 
 void dsm::free(handle handle)
@@ -63,23 +86,41 @@ void dsm::free(handle handle)
 #endif
 }
 
-void dsm::operator()(pTW_IDENTITY origin, pTW_IDENTITY destination, TW_UINT32 DG, TW_UINT16 DAT, TW_UINT16 MSG, TW_MEMREF data)
+void dsm::operator()(identity* origin, identity* destination, data_group DG, uint16_t DAT, uint16_t MSG, TW_MEMREF data)
 {
     if (!entry_) {
         throw twain_error(error_code::dsm_not_ready);
     }
 
-    auto return_code = entry_(origin, destination, DG, DAT, MSG, data);
+    auto return_code = entry_(origin, destination, static_cast<uint32_t>(DG), DAT, MSG, data);
     if (return_code != TWRC_SUCCESS) {
         throw twain_error(static_cast<error_code>(return_code));
     }
 }
 
-void dsm::operator()(pTW_IDENTITY origin, pTW_IDENTITY dest, TW_UINT32 DG, TW_UINT16 DAT, TW_UINT16 MSG, TW_MEMREF data, std::error_code& ec)
+void dsm::operator()(identity* origin, identity* destination, data_group DG, uint16_t DAT, uint16_t MSG, TW_MEMREF data, std::error_code& ec) noexcept
 {
     try {
-        (*this)(origin, dest, DG, DAT, MSG, data);
+        (*this)(origin, destination, DG, DAT, MSG, data);
     } catch (const std::system_error& e) {
         ec = e.code();
     }
+}
+
+void dsm::clear_entrypoint()
+{
+    std::fill_n((char*)&entrypoint_, sizeof(TW_ENTRYPOINT), 0);
+    entrypoint_.Size = sizeof(TW_ENTRYPOINT);
+}
+
+void dsm::request_entrypoint(identity* identity)
+{
+    clear_entrypoint();
+
+    // The entrypoint is available only when requesting a TWAIN 2.0+ connection
+    if ((identity->SupportedGroups & (uint32_t)DF_DSM2) == 0) {
+        return;
+    }
+
+    (*this)(identity, nullptr, data_group::control, DAT_ENTRYPOINT, MSG_GET, reinterpret_cast<TW_MEMREF>(&entrypoint_));
 }

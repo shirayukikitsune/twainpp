@@ -47,6 +47,25 @@ namespace kitsune::twain {
         void state(enum state new_state);
 
         /**
+         * Open a connection to the DSM
+         *
+         * This may throw an exception if there was a failure
+         *
+         * @param client_identity The identity to register with the DSM
+         * @param parent_window A reference to the parent window
+         * @remarks The parent_window must be nullptr when the target OS is not Windows
+         */
+        void open(identity* client_identity, TW_MEMREF parent_window);
+
+        /**
+         * Open a connection to the DSM
+         * @param client_identity
+         * @param parent_window
+         * @param ec
+         */
+        void open(identity* client_identity, TW_MEMREF parent_window, std::error_code& ec) noexcept;
+
+        /**
          * Allocate memory that can be shared with the DSM and DS
          * @param size How much memory to allocate
          * @return A handle to the allocated memory or nullptr if failed to allocate
@@ -72,12 +91,12 @@ namespace kitsune::twain {
          * @param data The data content
          * @throws std::error_code on any failure
          */
-        void operator()(pTW_IDENTITY origin,
-                             pTW_IDENTITY destination,
-                             TW_UINT32 DG,
-                             TW_UINT16 DAT,
-                             TW_UINT16 MSG,
-                             TW_MEMREF data);
+        void operator()(identity* origin,
+                identity* destination,
+                data_group DG,
+                uint16_t DAT,
+                uint16_t MSG,
+                TW_MEMREF data);
 
         /**
          * @brief Post an operation to the DSM
@@ -85,25 +104,28 @@ namespace kitsune::twain {
          * This method throws nothing in case of any failure.
          *
          * @param origin The source of the message
-         * @param dest The message recipient
+         * @param destination The message recipient
          * @param DG The message Data Group
          * @param DAT The message Data Argument Type
          * @param MSG The message to be posted
          * @param data The data content
          * @param ec Error code to be set in case of failure
          */
-        void operator()(pTW_IDENTITY origin,
-                             pTW_IDENTITY dest,
-                             TW_UINT32 DG,
-                             TW_UINT16 DAT,
-                             TW_UINT16 MSG,
-                             TW_MEMREF data,
-                             std::error_code& ec);
+        void operator()(identity* origin,
+                identity* destination,
+                data_group DG,
+                uint16_t DAT,
+                uint16_t MSG,
+                TW_MEMREF data,
+                std::error_code& ec) noexcept;
 
     private:
         enum state state_ = state::disconnected;
         std::function<dsm_entry> entry_;
         TW_ENTRYPOINT entrypoint_{};
+
+        void clear_entrypoint();
+        void request_entrypoint(identity* identity);
     };
 
 }
