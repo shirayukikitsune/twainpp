@@ -53,8 +53,10 @@ namespace kitsune::twain {
                     return "busy"s;
                 case error_code::scanner_locked:
                     return "scanner locked"s;
-                case error_code::invalid_state:
-                    return "invalid state"s;
+                case error_code::invalid_ds_state:
+                    return "invalid ds state"s;
+                case error_code::dsm_not_ready:
+                    return "dsm is not ready"s;
                 default:
                     return "unknown error"s;
             }

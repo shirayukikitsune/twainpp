@@ -16,9 +16,19 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#ifndef TWAINPP_PRECOMPILED_H
+#define TWAINPP_PRECOMPILED_H
 
 #include "external/twain.h"
 
+#include <boost/dll.hpp>
+#include <functional>
+#include <memory>
 #include <string>
 #include <system_error>
+
+#if defined(WIN32) || defined(WIN64) || defined (_WINDOWS)
+#include <Windows.h>
+#endif
+
+#endif

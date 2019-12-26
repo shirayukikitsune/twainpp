@@ -16,7 +16,8 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#ifndef TWAINPP_ERROR_CONDITION_H
+#define TWAINPP_ERROR_CONDITION_H
 
 #include "precompiled.h"
 
@@ -60,3 +61,5 @@ namespace std {
     template <>
     struct is_error_condition_enum<kitsune::twain::error_condition> : true_type {};
 }
+
+#endif

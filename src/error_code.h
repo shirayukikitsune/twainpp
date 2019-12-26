@@ -16,7 +16,8 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#ifndef TWAINPP_ERROR_CODE_H
+#define TWAINPP_ERROR_CODE_H
 
 #include "precompiled.h"
 
@@ -40,8 +41,10 @@ namespace kitsune::twain {
         data_not_available = TWRC_DATANOTAVAILABLE,
         busy = TWRC_BUSY,
         scanner_locked = TWRC_SCANNERLOCKED,
-        /// The DS or DSM state is invalid for the requested operation
-        invalid_state = TWRC_CUSTOMBASE + 1,
+        /// The DS state is invalid for the requested operation
+        invalid_ds_state = TWRC_CUSTOMBASE + 1,
+        /// The DSM state is invalid for the requested operation
+        dsm_not_ready,
     };
 
     std::error_code make_error_code(error_code ec);
@@ -56,3 +59,5 @@ namespace std {
     template<>
     struct is_error_code_enum<kitsune::twain::error_code> : std::true_type {};
 }
+
+#endif

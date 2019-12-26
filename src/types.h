@@ -16,11 +16,15 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef TWAINPP_H
-#define TWAINPP_H
+#ifndef TWAINPP_TYPES_H
+#define TWAINPP_TYPES_H
 
-#include "error_code.h"
-#include "error_condition.h"
-#include "dsm.h"
+#include "precompiled.h"
+
+namespace kitsune::twain {
+    typedef TW_HANDLE handle;
+
+    typedef TW_UINT16 (dsm_entry)(pTW_IDENTITY, pTW_IDENTITY, TW_UINT32, TW_UINT16, TW_UINT16, TW_MEMREF);
+}
 
 #endif

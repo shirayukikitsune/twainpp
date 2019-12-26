@@ -1,6 +1,6 @@
-add_library(twain++ error_code.h error_condition.h twain++.h)
+add_library(twain++ dsm.h error_code.h error_condition.h twain++.h types.h)
 
-target_sources(twain++ PRIVATE error_code.cpp error_condition.cpp external/twain.h)
+target_sources(twain++ PRIVATE dsm.cpp error_code.cpp error_condition.cpp external/twain.h)
 
 # In OSX, TWAIN library is a framework that must be statically linked
 if (APPLE)
@@ -14,6 +14,11 @@ if(CMAKE_VERSION VERSION_GREATER_EQUAL "3.16.0")
 else()
     target_sources(twain++ PRIVATE precompiled.h)
 endif()
+
+target_include_directories(twain++ PUBLIC ${Boost_INCLUDE_DIR})
+target_link_libraries(twain++ LINK_INTERFACE_LIBRARIES
+        Boost::system
+        Boost::filesystem)
 
 set_target_properties(twain++
     PROPERTIES
@@ -31,4 +36,6 @@ install(TARGETS twain++
         LIBRARY DESTINATION lib)
 
 install(DIRECTORY . DESTINATION include/kitsune/twain++
-        FILES_MATCHING PATTERN "*.h")
+        FILES_MATCHING
+            PATTERN "precompiled.h" EXCLUDE
+            PATTERN "*.h")
